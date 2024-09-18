@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ApprovalTests;
+using ApprovalTests.Reporters;
+using System;
 using System.Collections.Generic;
 using TheatricalPlayersRefactoringKata.Domain.Entities;
 using TheatricalPlayersRefactoringKata.Domain.Repositories;
@@ -23,7 +25,7 @@ namespace TheatricalPlayersRefactoringKata.Tests.UnitTests.ServiceTests
 
         [Fact]
         [Trait("ServiceTests", "StatementPrinterServiceValidation")]
-        public async void GivenAnInvalidInvoiceId_ShouldThrowArgumentNullException_WhenInvoiceIdIsNotFound()
+        public async void PrintStatementAsync_GivenAnInvalidInvoiceId_ShouldThrowArgumentNullException_WhenInvoiceIdIsNotFound()
         {
             int invoiceId = 0;
             var exception = await Assert.ThrowsAsync<ArgumentNullException>( async () =>
@@ -34,7 +36,7 @@ namespace TheatricalPlayersRefactoringKata.Tests.UnitTests.ServiceTests
 
         [Fact]
         [Trait("ServiceTests", "StatementPrinterServiceValidation")]
-        public async void GivenAnValidInvoiceId_ShouldThrowArgumentNullException_WhenPlayIsNotFound()
+        public async void PrintStatementAsync_GivenAnValidInvoiceId_ShouldThrowArgumentNullException_WhenPlayIsNotFound()
         {
             List<PerformanceEntity> performanceIncorrectList = new List<PerformanceEntity>
             {
@@ -56,7 +58,7 @@ namespace TheatricalPlayersRefactoringKata.Tests.UnitTests.ServiceTests
 
         [Fact]
         [Trait("ServiceTests", "StatementPrinterServiceValidation")]
-        public async void GivenAnValidInvoiceAndPlays_ShouldReturnFormattedStatement()
+        public async void PrintStatementAsync_GivenAnValidInvoiceAndPlays_ShouldReturnFormattedStatement()
         {
             int invoiceId = 3;
             var resultStatement = await _statementPrinterService.PrintStatementAsync(invoiceId);
@@ -71,5 +73,51 @@ namespace TheatricalPlayersRefactoringKata.Tests.UnitTests.ServiceTests
             Assert.Contains("Amount owed is $3,995.40", resultStatement);
             Assert.Contains("You earned 56 credits", resultStatement);
         }
+
+
+        [Fact]
+        [Trait("ServiceTests", "StatementPrinterServiceValidation")]
+        public async void GenerateXmlStatementAsync_GivenAnInvalidInvoiceId_ShouldThrowArgumentNullException_WhenInvoiceIdIsNotFound()
+        {
+            int invoiceId = 0;
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+                 await _statementPrinterService.GenerateXmlStatementAsync(invoiceId));
+
+            Assert.Equal("Value cannot be null. (Parameter 'Invoice not found')", exception.Message);
+        }
+
+        [Fact]
+        [Trait("ServiceTests", "StatementPrinterServiceValidation")]
+        public async void GenerateXmlStatementAsync_GivenAnValidInvoiceId_ShouldThrowArgumentNullException_WhenPlayIsNotFound()
+        {
+            List<PerformanceEntity> performanceIncorrectList = new List<PerformanceEntity>
+            {
+                new PerformanceEntity("incorrectHamlet", 0),
+                new PerformanceEntity("incorretAs-like", 0),
+                new PerformanceEntity("incorrectOthello", 0),
+            };
+            var invoiceEntity = new InvoiceEntity("BigCo", performanceIncorrectList);
+            invoiceEntity.SetToTestIdInvoice(1);
+
+            await _invoiceRepository.CreateAsync(invoiceEntity);
+
+            int invoiceId = 1;
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+                 await _statementPrinterService.GenerateXmlStatementAsync(invoiceId));
+
+            Assert.Equal("Value cannot be null. (Parameter 'Play not found')", exception.Message);
+        }
+
+        [Fact]
+        [Trait("ServiceTests", "StatementPrinterServiceValidation")]
+        [UseReporter(typeof(DiffReporter))]
+        public async void GenerateXmlStatementAsync_GivenAnValidInvoiceAndPlays_ShouldReturnFormattedStatement()
+        {
+            int invoiceId = 3;
+            var resultStatement = await _statementPrinterService.GenerateXmlStatementAsync(invoiceId);
+
+            Approvals.Verify(resultStatement);
+        }
+
     }
 }
