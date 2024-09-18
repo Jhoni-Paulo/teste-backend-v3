@@ -1,8 +1,13 @@
 ﻿using FluentValidation;
 using System.Globalization;
+using System.Xml.Serialization;
+using System.Xml;
 using TheatricalPlayersRefactoringKata.Domain.Entities;
+using TheatricalPlayersRefactoringKata.Domain.Models.Dtl;
 using TheatricalPlayersRefactoringKata.Domain.Repositories;
 using TheatricalPlayersRefactoringKata.Service.Interfaces;
+using System.Text;
+using System;
 
 namespace TheatricalPlayersRefactoringKata.Service
 {
@@ -10,11 +15,58 @@ namespace TheatricalPlayersRefactoringKata.Service
     {
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly IPlayRepository _playRepository;
-        private readonly IValidator<InvoiceEntity> _invoiceValidator;
+
         public StatementPrinterService( IInvoiceRepository invoiceRepository, IPlayRepository playRepository )
         {
             _invoiceRepository = invoiceRepository;
             _playRepository = playRepository;
+        }
+
+        public async Task<string> GenerateXmlStatementAsync(int invoiceId)
+        {
+            try
+            {
+                var invoice = await _invoiceRepository.GetByIdAsync(invoiceId);
+
+                if (invoice == null)
+                {
+                    throw new ArgumentNullException("Invoice not found");
+                }
+
+                var statement = new StatementXmlDto
+                {
+                    Customer = invoice.Customer,
+                    Items = new List<StatementXmlItemDto>(),
+                    AmountOwed = 0,
+                    EarnedCredits = 0
+                };
+
+                foreach (var perf in invoice.Performances)
+                {
+                    var play = await _playRepository.GetPlayBySlugAsync(perf.FkPlaySlug);
+                    if (play == null) throw new ArgumentNullException("Play not found");
+
+                    decimal amount = CalculateAmount(play, perf);
+                    var volumeCredits = CalculateVolumeCredits(play, perf);
+
+                    statement.Items.Add(new StatementXmlItemDto
+                    {
+                        AmountOwed = amount / 100,
+                        EarnedCredits = volumeCredits,
+                        Seats = perf.Audience
+                    });
+
+                    statement.AmountOwed += amount / 100;
+                    statement.EarnedCredits += volumeCredits;
+                }
+
+                var xml = SerializeToXml(statement);
+                return xml;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
         public async Task<string> PrintStatementAsync(int invoiceId)
         {
@@ -116,5 +168,31 @@ namespace TheatricalPlayersRefactoringKata.Service
 
             return amount;
         }
+
+        private string SerializeToXml(StatementXmlDto statement)
+        {
+            var xmlSerializer = new XmlSerializer(typeof(StatementXmlDto));
+
+            var xmlSettings = new XmlWriterSettings
+            {
+                Indent = true,
+                Encoding = Encoding.UTF8
+            };
+
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
+                {
+                    using (var xmlWriter = XmlWriter.Create(streamWriter, xmlSettings))
+                    {
+                        xmlSerializer.Serialize(xmlWriter, statement);
+                        streamWriter.Flush(); // Garante que todos os dados sejam gravados no MemoryStream
+                        return Encoding.UTF8.GetString(memoryStream.ToArray()); // Converte os bytes do MemoryStream para string
+                    }
+                }
+            }
+        }
+
+
     }
 }

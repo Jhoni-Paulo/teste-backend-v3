@@ -58,7 +58,7 @@ namespace TheatricalPlayersRefactoringKata.Tests.UnitTests.ServiceTests
         [Trait("ServiceTests", "StatementPrinterServiceValidation")]
         public async void GivenAnValidInvoiceAndPlays_ShouldReturnFormattedStatement()
         {
-            int invoiceId = 2;
+            int invoiceId = 3;
             var resultStatement = await _statementPrinterService.PrintStatementAsync(invoiceId);
 
             Assert.Contains("Statement for BigCo", resultStatement);
@@ -68,8 +68,8 @@ namespace TheatricalPlayersRefactoringKata.Tests.UnitTests.ServiceTests
             Assert.Contains("Henry V: $705.40 (20 seats)", resultStatement);
             Assert.Contains("King John: $931.60 (39 seats)", resultStatement);
             Assert.Contains("Henry V: $705.40 (20 seats)", resultStatement);
-            Assert.Contains("Amount owed is $1,653.00", resultStatement);
-            Assert.Contains("You earned 47 credits", resultStatement);
+            Assert.Contains("Amount owed is $3,995.40", resultStatement);
+            Assert.Contains("You earned 56 credits", resultStatement);
         }
     }
 }

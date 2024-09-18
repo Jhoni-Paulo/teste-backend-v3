@@ -57,4 +57,13 @@ public class StatementPrinterTests
 
         Approvals.Verify(resultStatement);
     }
+
+    [Fact]
+    [UseReporter(typeof(DiffReporter))]
+    public async void TestXmlStatementExample()
+    {
+        var resultStatement = await _statementPrinterService.GenerateXmlStatementAsync(3);
+
+        Approvals.Verify(resultStatement);
+    }
 }
