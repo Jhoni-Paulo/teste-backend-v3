@@ -20,7 +20,6 @@
   <ItemGroup>
     <ProjectReference Include="..\TheatricalPlayersRefactoringKata.Domain\TheatricalPlayersRefactoringKata.Domain.csproj" />
     <ProjectReference Include="..\TheatricalPlayersRefactoringKata.Service\TheatricalPlayersRefactoringKata.Service.csproj" />
-    <ProjectReference Include="..\TheatricalPlayersRefactoringKata\TheatricalPlayersRefactoringKata.csproj" />
   </ItemGroup>
 
 </Project>
