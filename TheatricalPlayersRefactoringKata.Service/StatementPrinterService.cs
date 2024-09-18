@@ -27,7 +27,7 @@ namespace TheatricalPlayersRefactoringKata.Service
                     throw new ArgumentNullException("Invoice not found");
                 }
 
-                var totalAmount = 0;
+                decimal totalAmount = 0;
                 var volumeCredits = 0;
                 var result = string.Format("Statement for {0}\n", invoice.Customer);
 
@@ -38,7 +38,7 @@ namespace TheatricalPlayersRefactoringKata.Service
                     var play = await _playRepository.GetPlayBySlugAsync(perf.FkPlaySlug);
                     if (play == null) throw new ArgumentNullException("Play not found");
 
-                    var thisAmount = CalculateAmount(play, perf);
+                    decimal thisAmount = CalculateAmount(play, perf);
                     volumeCredits += CalculateVolumeCredits(play, perf);
 
                     result += String.Format(cultureInfo, "  {0}: {1:C} ({2} seats)\n", play.Name, Convert.ToDecimal(thisAmount / 100), perf.Audience);
@@ -56,7 +56,7 @@ namespace TheatricalPlayersRefactoringKata.Service
             }
         }
 
-        private int CalculateAmount(PlayEntity play, PerformanceEntity perf)
+        private decimal CalculateAmount(PlayEntity play, PerformanceEntity perf)
         {
             var lines = play.Lines;
             if (lines < 1000) lines = 1000;
@@ -67,15 +67,15 @@ namespace TheatricalPlayersRefactoringKata.Service
             switch (play.Type)
             {
                 case PlayType.Tragedy:
-                    thisAmount += CalculateTragedyPrice(perf.Audience, thisAmount);
+                    thisAmount = CalculateTragedyPrice(perf.Audience, thisAmount);
                  break;
 
                 case PlayType.Comedy:
-                    thisAmount += CalculateComedyPrice(perf.Audience, thisAmount); 
+                    thisAmount = CalculateComedyPrice(perf.Audience, thisAmount); 
                 break;
 
                 case PlayType.History:
-                    thisAmount += CalculateTragedyPrice(perf.Audience, thisAmount) + CalculateComedyPrice(perf.Audience, thisAmount); 
+                    thisAmount = CalculateTragedyPrice(perf.Audience, thisAmount) + CalculateComedyPrice(perf.Audience, thisAmount); 
                 break;
                 
                 default: 

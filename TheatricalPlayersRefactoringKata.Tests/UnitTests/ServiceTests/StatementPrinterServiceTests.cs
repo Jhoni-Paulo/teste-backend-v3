@@ -65,6 +65,9 @@ namespace TheatricalPlayersRefactoringKata.Tests.UnitTests.ServiceTests
             Assert.Contains("Hamlet: $650.00 (55 seats)", resultStatement);
             Assert.Contains("As You Like It: $547.00 (35 seats)", resultStatement);
             Assert.Contains("Othello: $456.00 (40 seats)", resultStatement);
+            Assert.Contains("Henry V: $705.40 (20 seats)", resultStatement);
+            Assert.Contains("King John: $931.60 (39 seats)", resultStatement);
+            Assert.Contains("Henry V: $705.40 (20 seats)", resultStatement);
             Assert.Contains("Amount owed is $1,653.00", resultStatement);
             Assert.Contains("You earned 47 credits", resultStatement);
         }

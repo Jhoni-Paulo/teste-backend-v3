@@ -17,6 +17,9 @@ namespace TheatricalPlayersRefactoringKata.Tests.Repositories
                 new PlayEntity("Hamlet", "hamlet", 4024, PlayType.Tragedy),
                 new PlayEntity("As You Like It", "as-like", 2670, PlayType.Comedy),
                 new PlayEntity("Othello", "othello", 3560, PlayType.Tragedy),
+                new PlayEntity("Henry V", "henry-v", 3227, PlayType.History),
+                new PlayEntity("King John", "john", 2648, PlayType.History),
+                new PlayEntity("Richard III", "richard-iii", 3718, PlayType.History)
             };
         }
         public async Task<PlayEntity> CreateAsync(PlayEntity entity)

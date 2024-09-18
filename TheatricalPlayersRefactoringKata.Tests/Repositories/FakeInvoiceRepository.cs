@@ -11,15 +11,31 @@ namespace TheatricalPlayersRefactoringKata.Tests.Repositories
         private List<InvoiceEntity> _invoiceList;
         public FakeInvoiceRepository()
         {
-            List<PerformanceEntity> performanceCorrectList = new List<PerformanceEntity>
-            {
-                new PerformanceEntity("hamlet", 55),
-                new PerformanceEntity("as-like", 35),
-                new PerformanceEntity("othello", 40),
+            _invoiceList = new List<InvoiceEntity>() { 
+                new InvoiceEntity(
+                    "BigCo",
+                    new List<PerformanceEntity>
+                    {
+                        new PerformanceEntity("hamlet", 55),
+                        new PerformanceEntity("as-like", 35),
+                        new PerformanceEntity("othello", 40),
+                    }
+                ),
+                new InvoiceEntity(
+                    "BigCo",
+                    new List<PerformanceEntity>
+                    {
+                        new PerformanceEntity("hamlet", 55),
+                        new PerformanceEntity("as-like", 35),
+                        new PerformanceEntity("othello", 40),
+                        new PerformanceEntity("henry-v", 20),
+                        new PerformanceEntity("john", 39),
+                        new PerformanceEntity("henry-v", 20)
+                    }
+                )
             };
-
-            _invoiceList = new List<InvoiceEntity>() { new InvoiceEntity("BigCo", performanceCorrectList) };
             _invoiceList[0].SetToTestIdInvoice(2);
+            _invoiceList[1].SetToTestIdInvoice(3);
         }
 
         
