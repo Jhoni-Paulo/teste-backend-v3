@@ -9,9 +9,11 @@ namespace TheatricalPlayersRefactoringKata.Tests.UnitTests.DomainTests
     public class InvoiceEntityTests
     {
         private readonly IValidator<InvoiceEntity> _invoiceEntityValidator;
+        private readonly IValidator<PerformanceEntity> _performanceEntityValidator;
         public InvoiceEntityTests()
         {
-            _invoiceEntityValidator = new InvoiceValidator();
+            _performanceEntityValidator = new PerformanceValidator();
+            _invoiceEntityValidator = new InvoiceValidator(_performanceEntityValidator);
         }
 
         [Fact]
@@ -29,6 +31,25 @@ namespace TheatricalPlayersRefactoringKata.Tests.UnitTests.DomainTests
             Assert.Contains(validationResult.Errors, erro => erro.ErrorMessage.Contains("Performances list cannot be null."));
             Assert.Contains(validationResult.Errors, erro => erro.ErrorMessage.Contains("Invoice must contain at least one performance."));
 
+        }
+
+        [Fact]
+        [Trait("DomainTests", "InvoiceEntityValidation")]
+        public void GivenAnValidInvoice_AndAnInvalidPerformanceList()
+        {
+            List<PerformanceEntity> performanceList = new List<PerformanceEntity>() {
+                new PerformanceEntity("", 0),
+                new PerformanceEntity("", 0),
+                new PerformanceEntity("", 0)
+            };
+
+            InvoiceEntity invoice = new InvoiceEntity("BigCo", performanceList);
+
+            var validationResult = _invoiceEntityValidator.Validate(invoice);
+
+            Assert.False(validationResult.IsValid);
+            Assert.Contains(validationResult.Errors, erro => erro.ErrorMessage.Contains("PlayId is required."));
+            Assert.Contains(validationResult.Errors, erro => erro.ErrorMessage.Contains("Audience must be at least 1."));
         }
 
         [Fact]

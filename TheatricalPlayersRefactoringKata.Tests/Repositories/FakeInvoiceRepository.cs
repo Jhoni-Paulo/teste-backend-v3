@@ -8,12 +8,25 @@ namespace TheatricalPlayersRefactoringKata.Tests.Repositories
 {
     public class FakeInvoiceRepository : IInvoiceRepository
     {
-
-        private List<InvoiceEntity> _invoiceList = new List<InvoiceEntity>();
-        public Task CreateAsync(InvoiceEntity entity)
+        private List<InvoiceEntity> _invoiceList;
+        public FakeInvoiceRepository()
         {
-            _invoiceList.Add(entity);
-            return Task.CompletedTask;
+            List<PerformanceEntity> performanceCorrectList = new List<PerformanceEntity>
+            {
+                new PerformanceEntity("hamlet", 55),
+                new PerformanceEntity("as-like", 35),
+                new PerformanceEntity("othello", 40),
+            };
+
+            _invoiceList = new List<InvoiceEntity>() { new InvoiceEntity("BigCo", performanceCorrectList) };
+            _invoiceList[0].SetToTestIdInvoice(2);
+        }
+
+        
+        public async Task<InvoiceEntity> CreateAsync(InvoiceEntity entity)
+        {
+           _invoiceList.Add(entity);
+            return entity;
         }
 
         public Task<IEnumerable<InvoiceEntity>> GetAllAsync()
