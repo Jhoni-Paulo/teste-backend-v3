@@ -1,8 +1,5 @@
 ﻿using FluentValidation;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using TheatricalPlayersRefactoringKata.Domain.Entities;
 using TheatricalPlayersRefactoringKata.Domain.Validations;
 using Xunit;
