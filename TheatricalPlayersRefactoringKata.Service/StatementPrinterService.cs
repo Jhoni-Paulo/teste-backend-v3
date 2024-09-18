@@ -64,21 +64,22 @@ namespace TheatricalPlayersRefactoringKata.Service
 
             int thisAmount = lines * 10;
 
-            if (play.Type == PlayType.Tragedy && perf.Audience > 30)
+            switch (play.Type)
             {
-                thisAmount += 1000 * (perf.Audience - 30);
-            }
-            else if (play.Type == PlayType.Comedy)
-            {
-                if (perf.Audience > 20)
-                {
-                    thisAmount += 10000 + 500 * (perf.Audience - 20);
-                }
-                thisAmount += 300 * perf.Audience;
-            }
-            else
-            {
-                throw new Exception("unknown type: " + play.Type);
+                case PlayType.Tragedy:
+                    thisAmount += CalculateTragedyPrice(perf.Audience, thisAmount);
+                 break;
+
+                case PlayType.Comedy:
+                    thisAmount += CalculateComedyPrice(perf.Audience, thisAmount); 
+                break;
+
+                case PlayType.History:
+                    thisAmount += CalculateTragedyPrice(perf.Audience, thisAmount) + CalculateComedyPrice(perf.Audience, thisAmount); 
+                break;
+                
+                default: 
+                    throw new Exception("unknown type: " + play.Type);
             }
 
             return thisAmount;
@@ -93,6 +94,27 @@ namespace TheatricalPlayersRefactoringKata.Service
             }
 
             return volumeCredits;
+        }
+
+        private int CalculateTragedyPrice(int audience, int amount)
+        {
+            if(audience > 30)
+            {
+                amount += 1000 * (audience - 30);
+            }
+
+            return amount;
+        }
+
+        private int CalculateComedyPrice(int audience, int amount)
+        {
+            if (audience > 20)
+            {
+                amount += 10000 + 500 * (audience - 20);
+            }
+            amount += 300 * audience;
+
+            return amount;
         }
     }
 }
